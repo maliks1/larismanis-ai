@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import { DashboardStats } from "@/components/dashboard-stats";
 import { VoiceLedgerInput } from "@/components/voice-ledger";
 
 type ParsedTransaksi = {
@@ -145,6 +146,10 @@ export function HomeDashboard() {
             </p>
           </div>
         </aside>
+      </section>
+
+      <section className="grid gap-4">
+        <DashboardStats />
       </section>
     </main>
   );

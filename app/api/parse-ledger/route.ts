@@ -2,7 +2,7 @@ import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseClient } from "@/lib/supabase";
+import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const runtime = "edge";
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       prompt: body.text,
     });
 
-    const supabase = createSupabaseClient();
+    const supabase = createSupabaseServerClient();
 
     if (supabase) {
       const { error } = await supabase.from("transactions").insert({
