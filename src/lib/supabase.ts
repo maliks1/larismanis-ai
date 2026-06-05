@@ -8,6 +8,15 @@ export function hasSupabaseConfig() {
   return Boolean(supabaseUrl && supabaseAnonKey);
 }
 
+export function ensureSupabaseServerEnv() {
+  if (!supabaseUrl) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable.");
+  }
+  if (!supabaseServiceRoleKey) {
+    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable (server-only).");
+  }
+}
+
 export function createSupabaseClient() {
   if (!hasSupabaseConfig()) {
     return null;
@@ -17,9 +26,7 @@ export function createSupabaseClient() {
 }
 
 export function createSupabaseServerClient() {
-  if (!hasSupabaseConfig()) {
-    return null;
-  }
-
+  // server client requires service role key — throw early if missing
+  ensureSupabaseServerEnv();
   return createClient(supabaseUrl, supabaseServiceRoleKey || supabaseAnonKey);
 }

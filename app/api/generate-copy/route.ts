@@ -144,14 +144,11 @@ export async function POST(request: NextRequest) {
             },
             {
               type: "image",
-              image: parsed.data.image,
+              image: publicData.publicUrl,
             },
           ],
         },
       ],
-      experimental_include: {
-        requestBody: false,
-      },
     });
 
     const hashtags = generatedCopy.hashtags
