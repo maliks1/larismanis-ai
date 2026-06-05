@@ -216,8 +216,8 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
   return (
     <div className="space-y-4">
       {!supported ? (
-        <div className="rounded-3xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
-          Web Speech API tidak tersedia. Gunakan Chrome atau Safari versi terbaru.
+        <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-950/20 dark:bg-red-950/10 px-4 py-3 text-sm text-red-900 dark:text-red-400">
+          Web Speech API tidak tersedia pada browser Anda. Gunakan Google Chrome atau Safari versi terbaru.
         </div>
       ) : null}
 
@@ -227,46 +227,53 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
             value={transcript}
             onChange={(event) => setTranscript(event.target.value)}
             placeholder={emptyTranscript}
-            className="min-h-52 w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4 text-base leading-7 text-slate-950 outline-none transition focus:border-amber-400 focus:bg-white focus:ring-4 focus:ring-amber-100"
+            className="min-h-48 w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 px-4 py-4 text-base leading-relaxed text-slate-900 dark:text-white placeholder-slate-400 outline-none transition duration-300 focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-500/10"
           />
 
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={toggleListening}
-              className={`inline-flex h-14 w-14 items-center justify-center rounded-full transition ${isListening ? "bg-red-600 text-white shadow-lg shadow-red-200" : "bg-slate-950 text-white hover:bg-slate-800"}`}
+              className={`inline-flex h-12 w-12 items-center justify-center rounded-xl transition duration-300 cursor-pointer ${
+                isListening
+                  ? "bg-red-500 hover:bg-red-600 text-white animate-pulse shadow-lg shadow-red-500/20"
+                  : "bg-slate-900 hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white hover:scale-105"
+              }`}
               aria-label={isListening ? "Stop microphone" : "Start microphone"}
             >
-              {isListening ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
+              {isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
             </button>
 
             <button
               type="button"
               onClick={resetTranscript}
-              className="inline-flex h-14 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex h-12 items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-5 text-sm font-semibold text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 transition duration-300 hover:scale-102 cursor-pointer"
             >
               <RotateCcw className="h-4 w-4" />
-              Reset transcript
+              Reset
             </button>
 
             <button
               type="button"
               onClick={submitTranscript}
               disabled={isSubmitting}
-              className="inline-flex h-14 items-center gap-2 rounded-full bg-amber-500 px-5 text-sm font-semibold text-slate-950 transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex h-12 items-center gap-2 rounded-xl bg-indigo-600 text-white px-6 text-sm font-semibold hover:bg-indigo-500 transition duration-300 hover:scale-102 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
             >
               <Send className="h-4 w-4" />
-              {isSubmitting ? "Memproses..." : "Submit transcript"}
+              {isSubmitting ? "Memproses..." : "Submit Transaksi"}
             </button>
           </div>
 
-          <div className="flex items-center justify-between gap-4 rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-slate-100 dark:bg-slate-950/60 border border-slate-200/50 dark:border-slate-800/40 px-4 py-3 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
             <span>{statusMessage}</span>
-            <span>{isListening ? "Mikrofon aktif" : "Mikrofon nonaktif"}</span>
+            <span className="flex items-center gap-1.5">
+              <span className={`h-2 w-2 rounded-full ${isListening ? "bg-red-500 animate-ping" : "bg-slate-400 dark:bg-slate-600"}`} />
+              {isListening ? "Perekam Aktif" : "Perekam Nonaktif"}
+            </span>
           </div>
 
           {errorMessage ? (
-            <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-900">
+            <p className="rounded-xl border border-red-200 bg-red-50 dark:border-red-950/30 dark:bg-red-950/20 px-4 py-3 text-sm text-red-900 dark:text-red-400">
               {errorMessage}
             </p>
           ) : null}

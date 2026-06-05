@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Camera, Hash, ImagePlus, Loader2, Sparkles } from "lucide-react";
+import { Camera, Hash, ImagePlus, Loader2, Sparkles, Copy, Check } from "lucide-react";
 
 type CopyResponse = {
   success?: boolean;
@@ -25,35 +25,35 @@ const platformOptions = [
   {
     value: "whatsapp",
     title: "WhatsApp Status",
-    note: "Singkat, personal, dan kuat untuk chat langsung.",
+    note: "Singkat, personal, langsung ke intinya.",
   },
   {
     value: "instagram",
-    title: "Instagram",
-    note: "Lebih visual dan cocok untuk hook yang engaging.",
+    title: "Instagram Feed/Caption",
+    note: "Menarik, visual, cocok dengan hook interaktif.",
   },
   {
     value: "tiktok",
-    title: "TikTok",
-    note: "Enerjik, cepat, dan mendorong rasa penasaran.",
+    title: "TikTok Script/Caption",
+    note: "Enerjik, trendi, memicu rasa penasaran.",
   },
 ] as const;
 
 const styleOptions = [
   {
     value: "formal",
-    title: "Formal",
-    note: "Bahasa rapi, profesional, dan kredibel.",
+    title: "Profesional/Formal",
+    note: "Bahasa terstruktur, elegan, dan terpercaya.",
   },
   {
     value: "santai",
-    title: "Santai",
-    note: "Bahasa akrab seperti obrolan sehari-hari.",
+    title: "Santai/Kasual",
+    note: "Akrab, seperti bercakap dengan sahabat.",
   },
   {
     value: "persuasif",
-    title: "Persuasif",
-    note: "Fokus pada manfaat, urgensi, dan CTA.",
+    title: "Persuasif (Soft-Sell)",
+    note: "Menonjolkan keuntungan produk dan call-to-action.",
   },
 ] as const;
 
@@ -68,6 +68,7 @@ export default function MarketingPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<CopyResponse["data"] | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -79,7 +80,7 @@ export default function MarketingPage() {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      setErrorMessage("Pilih gambar produk terlebih dahulu.");
+      setErrorMessage("Pilih atau ambil foto produk terlebih dahulu.");
       return;
     }
 
@@ -100,293 +101,324 @@ export default function MarketingPage() {
       const payload = (await response.json()) as CopyResponse;
 
       if (!response.ok || !payload.data) {
-        throw new Error(payload.error ?? "Gagal membuat copy.");
+        throw new Error(payload.error ?? "Gagal membuat materi promosi.");
       }
 
       setResult(payload.data);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Terjadi kesalahan.");
+      setErrorMessage(error instanceof Error ? error.message : "Terjadi kesalahan sistem.");
       setResult(null);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleCopyCaption = () => {
+    if (!result) return;
+    const textToCopy = `${result.caption}\n\n${result.hashtags.join(" ")}`;
+    void navigator.clipboard.writeText(textToCopy);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const selectedPlatform = platformOptions.find((option) => option.value === platform);
   const selectedStyle = styleOptions.find((option) => option.value === style);
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top,#fff0d9_0%,#fff9ee_36%,#fffdf9_100%)] px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
-        <header className="overflow-hidden rounded-[2rem] border border-amber-200 bg-slate-950 p-6 text-white shadow-[0_20px_80px_rgba(15,23,42,0.22)] sm:p-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-300">
-                Visual Marketing Generator
-              </p>
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">
-                Upload gambar produk, lalu dapatkan caption yang siap jual.
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-                Halaman ini mengunggah gambar ke Supabase Storage, mengirim visual ke
-                Gemini multimodal, lalu mengembalikan caption dan hashtag yang sesuai
-                dengan platform serta gaya bahasa pilihan.
-              </p>
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      {/* Title Header Card */}
+      <header className="relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white/60 dark:border-slate-800/60 dark:bg-slate-900/40 p-6 sm:p-8 shadow-sm backdrop-blur-md transition-colors duration-300">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+            <Sparkles className="h-3.5 w-3.5" />
+            Gemini Multimodal Copywriting
+          </span>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+            Visual Marketing Generator
+          </h1>
+          <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-350 max-w-3xl">
+            Unggah foto produk usaha Anda, lalu biarkan AI menganalisis isi visual dan menghasilkan rancangan promosi tertulis yang disesuaikan untuk berbagai kanal media sosial.
+          </p>
+        </div>
+      </header>
+
+      {/* Grid Content */}
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        {/* Left Column: Form Controls */}
+        <div className="rounded-3xl border border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-900 p-6 shadow-sm transition-colors duration-300 flex flex-col gap-6">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+              <ImagePlus className="h-5 w-5" />
             </div>
-
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Kembali ke dashboard
-            </Link>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Input Gambar & Detail</h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Unggah foto dari perangkat atau gunakan kamera.</p>
+            </div>
           </div>
-        </header>
 
-        <section className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:p-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
-                <ImagePlus className="h-5 w-5" />
+          {/* Upload Box */}
+          <label className="relative flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 px-4 py-8 text-center transition duration-300 hover:border-indigo-400 dark:hover:border-indigo-500 hover:bg-slate-50 dark:hover:bg-slate-950/40 overflow-hidden">
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                setSelectedFile(file);
+                setPreviewUrl((currentPreviewUrl) => {
+                  if (currentPreviewUrl) {
+                    URL.revokeObjectURL(currentPreviewUrl);
+                  }
+                  return file ? URL.createObjectURL(file) : null;
+                });
+                setResult(null);
+                setErrorMessage(null);
+              }}
+            />
+            {previewUrl ? (
+              <div className="flex flex-col items-center gap-4 w-full">
+                <Image
+                  src={previewUrl}
+                  alt="Preview produk"
+                  width={1200}
+                  height={900}
+                  unoptimized
+                  className="max-h-64 w-full rounded-xl object-contain shadow-sm border border-slate-200/50 dark:border-slate-800/60"
+                />
+                <div className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-xs">
+                  {selectedFile?.name}
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-slate-950">Unggah produk</h2>
-                <p className="text-sm text-slate-600">
-                  Pakai kamera HP atau file dari galeri.
+            ) : (
+              <div className="max-w-sm flex flex-col items-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 mb-4">
+                  <Camera className="h-6 w-6" />
+                </div>
+                <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                  Pilih foto produk Anda
+                </p>
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 px-4">
+                  Mendukung format JPEG, PNG, atau WebP. Gambar dianalisis otomatis untuk mendeteksi nama produk dan kategori.
                 </p>
               </div>
-            </div>
+            )}
+          </label>
 
-            <label className="mt-5 flex min-h-64 cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border-2 border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-center transition hover:border-amber-300 hover:bg-amber-50/60">
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={(event) => {
-                  const file = event.target.files?.[0] ?? null;
-                  setSelectedFile(file);
-                  setPreviewUrl((currentPreviewUrl) => {
-                    if (currentPreviewUrl) {
-                      URL.revokeObjectURL(currentPreviewUrl);
-                    }
-
-                    return file ? URL.createObjectURL(file) : null;
-                  });
-                  setResult(null);
-                  setErrorMessage(null);
-                }}
-              />
-              {previewUrl ? (
-                <div className="flex flex-col items-center gap-4">
-                  <Image
-                    src={previewUrl}
-                    alt="Preview produk"
-                    width={1200}
-                    height={900}
-                    unoptimized
-                    className="max-h-72 w-full rounded-[1.5rem] object-cover shadow-[0_18px_60px_rgba(15,23,42,0.15)]"
-                  />
-                  <p className="text-sm font-medium text-slate-700">
-                    {selectedFile?.name}
-                  </p>
-                </div>
-              ) : (
-                <div className="max-w-sm">
-                  <Camera className="mx-auto h-10 w-10 text-amber-700" />
-                  <p className="mt-4 text-base font-semibold text-slate-950">
-                    Klik untuk pilih gambar produk
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Format JPEG, PNG, atau WebP. Cocok untuk foto makanan, minuman,
-                    fashion, kosmetik, dan katalog UMKM.
-                  </p>
-                </div>
-              )}
-            </label>
-
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <div>
-                <p className="text-sm font-semibold text-slate-950">Platform tujuan</p>
-                <div className="mt-3 grid gap-2">
-                  {platformOptions.map((option) => {
-                    const active = option.value === platform;
-
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setPlatform(option.value)}
-                        className={`rounded-2xl border px-4 py-3 text-left transition ${active ? "border-amber-400 bg-amber-50" : "border-slate-200 bg-white hover:border-slate-300"}`}
-                      >
-                        <div className="text-sm font-semibold text-slate-950">
-                          {option.title}
-                        </div>
-                        <div className="mt-1 text-sm leading-6 text-slate-600">
-                          {option.note}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-semibold text-slate-950">Gaya bahasa</p>
-                <div className="mt-3 grid gap-2">
-                  {styleOptions.map((option) => {
-                    const active = option.value === style;
-
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setStyle(option.value)}
-                        className={`rounded-2xl border px-4 py-3 text-left transition ${active ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-white hover:border-slate-300"}`}
-                      >
-                        <div className="text-sm font-semibold">{option.title}</div>
-                        <div
-                          className={`mt-1 text-sm leading-6 ${active ? "text-slate-300" : "text-slate-600"}`}
-                        >
-                          {option.note}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+          {/* Selection Panels */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Platform Selection */}
+            <div>
+              <label className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Platform Tujuan</label>
+              <div className="mt-2.5 space-y-2.5">
+                {platformOptions.map((option) => {
+                  const active = option.value === platform;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setPlatform(option.value)}
+                      className={`w-full rounded-xl border px-4 py-3 text-left transition duration-300 cursor-pointer ${
+                        active
+                          ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-300"
+                          : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-950/50"
+                      }`}
+                    >
+                      <div className="text-xs sm:text-sm font-bold">{option.title}</div>
+                      <div className="mt-1 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                        {option.note}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="mt-6 inline-flex h-14 items-center gap-2 rounded-full bg-slate-950 px-6 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-              {isSubmitting ? "Mengunggah dan membuat copy..." : "Generate copy"}
-            </button>
-
-            {errorMessage ? (
-              <div className="mt-4 rounded-3xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-900">
-                {errorMessage}
+            {/* Language Style Selection */}
+            <div>
+              <label className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">Gaya Bahasa</label>
+              <div className="mt-2.5 space-y-2.5">
+                {styleOptions.map((option) => {
+                  const active = option.value === style;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setStyle(option.value)}
+                      className={`w-full rounded-xl border px-4 py-3 text-left transition duration-300 cursor-pointer ${
+                        active
+                          ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-300"
+                          : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-355 hover:bg-slate-50 dark:hover:bg-slate-950/50"
+                      }`}
+                    >
+                      <div className="text-xs sm:text-sm font-bold">{option.title}</div>
+                      <div className="mt-1 text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                        {option.note}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
-            ) : null}
+            </div>
           </div>
 
-          <aside className="flex flex-col gap-6">
-            <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:p-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
-                  <Hash className="h-5 w-5" />
+          {/* Submit Action */}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-indigo-600 text-white font-bold text-sm hover:bg-indigo-500 transition duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4" />
+            )}
+            {isSubmitting ? "Menganalisis & Membuat Copy..." : "Buat Tulisan Jualan"}
+          </button>
+
+          {errorMessage && (
+            <div className="rounded-xl border border-red-200 bg-red-50 dark:border-red-950/30 dark:bg-red-950/20 p-4 text-xs sm:text-sm text-red-900 dark:text-red-400 leading-relaxed">
+              {errorMessage}
+            </div>
+          )}
+        </div>
+
+        {/* Right Column: Output Showcase */}
+        <aside className="flex flex-col gap-6">
+          <div className="rounded-3xl border border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-900 p-6 shadow-sm transition-colors duration-300 flex flex-col gap-5">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
+                <Hash className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Hasil Kreasi Promosi</h2>
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Salin copy promosi dan siapkan jualan Anda.</p>
+              </div>
+            </div>
+
+            {result ? (
+              <div className="space-y-4">
+                {/* Meta details */}
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-850 p-4">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    Analisis Visual Produk
+                  </span>
+                  <div className="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
+                    {result.productName}
+                  </div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 capitalize">
+                    Jenis: {result.productType}
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-slate-950">Output promosi</h2>
-                  <p className="text-sm text-slate-600">
-                    Hasil caption, angle, dan hashtag akan tampil di sini.
+
+                {/* Caption Card with Copy Button */}
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-850 p-4 flex flex-col gap-2 relative">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                      Teks Keterangan (Caption)
+                    </span>
+                    <button
+                      onClick={handleCopyCaption}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition"
+                      title="Salin ke clipboard"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                          <span className="text-emerald-500">Tersalin!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" />
+                          <span>Salin</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="whitespace-pre-wrap text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                    {result.caption}
                   </p>
                 </div>
+
+                {/* Selling Angle */}
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-850 p-4">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Sudut Penjualan (Marketing Angle)
+                  </span>
+                  <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-350">
+                    {result.angle}
+                  </p>
+                </div>
+
+                {/* Hashtags */}
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-850 p-4">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    Hashtag Terkait
+                  </span>
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {result.hashtags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-lg bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 px-2.5 py-1 text-xs text-indigo-600 dark:text-indigo-400 font-semibold shadow-sm"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Stored Image Preview */}
+                <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/20">
+                  <Image
+                    src={result.imageUrl}
+                    alt="Uploaded product visual"
+                    width={1200}
+                    height={800}
+                    unoptimized
+                    className="h-48 w-full object-cover"
+                  />
+                  <div className="border-t border-slate-200/60 dark:border-slate-800 p-3 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 bg-slate-100/40 dark:bg-slate-950/40">
+                    Foto produk ini disimpan di Supabase Storage untuk penggunaan konten lebih lanjut.
+                  </div>
+                </div>
               </div>
+            ) : (
+              <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 p-6 text-center">
+                <Camera className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-650" />
+                <p className="mt-3.5 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  Belum ada hasil promosi. Pilih gambar produk Anda di sebelah kiri, atur platform serta gaya bahasa, lalu klik "Buat Tulisan Jualan".
+                </p>
+              </div>
+            )}
+          </div>
 
-              {result ? (
-                <div className="mt-5 space-y-4">
-                  <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">
-                      Produk terdeteksi
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-slate-950">
-                      {result.productName}
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-slate-700">
-                      {result.productType}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                      Caption
-                    </p>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-800">
-                      {result.caption}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                      Angle jualan
-                    </p>
-                    <p className="mt-2 text-sm leading-7 text-slate-700">
-                      {result.angle}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-                      Hashtag
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {result.hashtags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="rounded-full bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50">
-                    <Image
-                      src={result.imageUrl}
-                      alt="Gambar yang diunggah ke Supabase Storage"
-                      width={1200}
-                      height={800}
-                      unoptimized
-                      className="h-56 w-full object-cover"
-                    />
-                    <div className="border-t border-slate-200 p-4 text-sm text-slate-600">
-                      Uploaded ke Supabase Storage untuk dipakai ulang di pipeline konten.
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-5 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-600">
-                  Pilih gambar, lalu tekan generate. Hasil akan berisi caption, hashtag,
-                  dan visual yang sudah tersimpan di Supabase Storage.
-                </div>
-              )}
+          {/* Current state snapshot */}
+          <div className="rounded-3xl border border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-900 p-6 shadow-sm transition-colors duration-300">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Konfigurasi Generator
+            </span>
+            <div className="mt-3.5 space-y-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-450">
+              <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-850">
+                <span>Platform Media</span>
+                <span className="font-bold text-slate-900 dark:text-white">{selectedPlatform?.title}</span>
+              </div>
+              <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-850">
+                <span>Gaya Komunikasi</span>
+                <span className="font-bold text-slate-900 dark:text-white">{selectedStyle?.title}</span>
+              </div>
+              <div className="flex items-center justify-between py-1">
+                <span>Status Berkas</span>
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {selectedFile ? "Foto Siap" : "Belum Ada"}
+                </span>
+              </div>
             </div>
-
-            <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-5 text-white shadow-[0_18px_60px_rgba(15,23,42,0.12)] sm:p-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-300">
-                Status pilihan
-              </p>
-              <dl className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">Platform</dt>
-                  <dd className="text-right font-medium">{selectedPlatform?.title}</dd>
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">Gaya</dt>
-                  <dd className="text-right font-medium">{selectedStyle?.title}</dd>
-                </div>
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">File</dt>
-                  <dd className="text-right font-medium">
-                    {selectedFile ? selectedFile.name : "Belum dipilih"}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </aside>
-        </section>
-      </div>
+          </div>
+        </aside>
+      </section>
     </main>
   );
 }
+

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet } from "lucide-react";
+import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet, HelpCircle } from "lucide-react";
 import { DashboardStats } from "@/components/dashboard-stats";
 
 const VoiceLedgerInput = dynamic(
@@ -11,7 +11,8 @@ const VoiceLedgerInput = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50 px-4 py-4 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-2">
+        <div className="h-4 w-4 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
         Memuat fitur suara...
       </div>
     ),
@@ -34,18 +35,21 @@ type ParsedTransaksi = {
 const highlights = [
   {
     icon: Mic,
-    title: "Catat dengan suara",
-    description: "Ucapkan transaksi dalam Bahasa Indonesia, lalu simpan langsung.",
+    title: "Catat Dengan Suara",
+    description: "Ucapkan transaksi Anda dalam Bahasa Indonesia kasual, lalu simpan instan.",
+    color: "from-blue-500/10 to-indigo-500/10 text-indigo-600 dark:text-indigo-400",
   },
   {
     icon: Wallet,
-    title: "Klasifikasi rapi",
-    description: "Nominal, kategori, urgensi, dan kelompok keuangan dipetakan otomatis.",
+    title: "Klasifikasi Otomatis",
+    description: "Nominal, kategori, urgensi, dan kelompok keuangan terpetakan secara pintar.",
+    color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400",
   },
   {
     icon: ShieldCheck,
-    title: "Siaga risiko",
-    description: "Dasbor akan menghitung rasio lancar dan margin laba bersih.",
+    title: "Analisis Risiko Realtime",
+    description: "Dasbor otomatis menghitung rasio lancar dan margin laba bersih UMKM Anda.",
+    color: "from-amber-500/10 to-orange-500/10 text-amber-600 dark:text-amber-400",
   },
 ];
 
@@ -53,42 +57,51 @@ export function HomeDashboard() {
   const [parsedData, setParsedData] = useState<ParsedTransaksi | null>(null);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="flex flex-col gap-4 rounded-[2rem] border border-amber-200/70 bg-white/85 p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-700">
-              LarisManis AI
-            </p>
-            <h1 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Asisten keuangan suara dan pemasaran visual untuk UMKM Indonesia.
+    <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
+      {/* Hero Header */}
+      <header className="relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white/60 dark:border-slate-800/60 dark:bg-slate-900/40 p-6 sm:p-8 shadow-sm backdrop-blur-md transition-colors duration-300">
+        {/* Glow Effects */}
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-3xl">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              Asisten Cerdas UMKM Indonesia
+            </span>
+            <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
+              Asisten Keuangan Suara & Pemasaran Visual
             </h1>
+            <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-350 sm:text-lg">
+              Ubah rekaman suara kasual menjadi pembukuan rapi, pantau kesehatan keuangan usaha secara langsung, dan buat materi promosi instan.
+            </p>
           </div>
-          <Link
-            href="/marketing"
-            className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Buka generator pemasaran
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="shrink-0">
+            <Link
+              href="/marketing"
+              className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-500 transition cursor-pointer"
+            >
+              Buka Generator Pemasaran
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
 
-        <p className="max-w-3xl text-base leading-7 text-slate-700 sm:text-lg">
-          Rekam transaksi dengan suara, ubah bahasa kasual menjadi data keuangan,
-          dan siapkan dashboard kesiapsiagaan bisnis yang bisa dipantau langsung.
-        </p>
-
-        <div className="grid gap-3 md:grid-cols-3">
+        {/* Highlights Grid */}
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {highlights.map((item) => (
             <article
               key={item.title}
-              className="rounded-3xl border border-amber-100 bg-amber-50/70 p-4"
+              className="relative rounded-2xl border border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/20 p-5 hover:border-slate-300 dark:hover:border-slate-700 transition duration-300"
             >
-              <item.icon className="h-5 w-5 text-amber-700" />
-              <h2 className="mt-3 text-sm font-semibold text-slate-950">
+              <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr ${item.color}`}>
+                <item.icon className="h-5 w-5" />
+              </div>
+              <h2 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
                 {item.title}
               </h2>
-              <p className="mt-1 text-sm leading-6 text-slate-700">
+              <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-400">
                 {item.description}
               </p>
             </article>
@@ -96,18 +109,20 @@ export function HomeDashboard() {
         </div>
       </header>
 
+      {/* Main Core Section */}
       <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] sm:p-6">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+        {/* Left Column: Voice Ledger */}
+        <div className="rounded-3xl border border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-900 p-6 shadow-sm transition-colors duration-300">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-950">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 Voice Ledger
               </h2>
-              <p className="text-sm text-slate-600">
-                Uji catatan suara lokal dengan Web Speech API.
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                Gunakan suara Anda untuk mencatatkan pemasukan atau pengeluaran secara alami.
               </p>
             </div>
           </div>
@@ -115,54 +130,79 @@ export function HomeDashboard() {
           <VoiceLedgerInput onProcessingComplete={setParsedData} />
         </div>
 
+        {/* Right Column: Snapshot & Progress */}
         <aside className="flex flex-col gap-6">
-          <div className="rounded-[2rem] border border-slate-200 bg-slate-950 p-6 text-white shadow-[0_18px_60px_rgba(15,23,42,0.12)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-300">
+          {/* Last Transaction Snapshot */}
+          <div className="rounded-3xl border border-slate-200/50 bg-white dark:border-slate-800/50 dark:bg-slate-900 p-6 shadow-sm transition-colors duration-300">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
               Snapshot
-            </p>
-            <h2 className="mt-3 text-2xl font-semibold">Transaksi terakhir</h2>
+            </span>
+            <h2 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">Transaksi Terakhir</h2>
+            
             {parsedData ? (
-              <dl className="mt-4 space-y-3 text-sm leading-6 text-slate-200">
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">Tipe</dt>
-                  <dd className="text-right font-medium capitalize">
+              <div className="mt-5 space-y-3.5">
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-950/40 px-4 py-3 border border-slate-100 dark:border-slate-900/60">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">Tipe Transaksi</span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
+                    parsedData.tipeTransaksi === "pemasukan"
+                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+                      : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400"
+                  }`}>
                     {parsedData.tipeTransaksi}
-                  </dd>
+                  </span>
                 </div>
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">Nominal</dt>
-                  <dd className="text-right font-medium">
+                
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-950/40 px-4 py-3 border border-slate-100 dark:border-slate-900/60">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">Nominal</span>
+                  <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                     Rp{parsedData.nominal.toLocaleString("id-ID")}
-                  </dd>
+                  </span>
                 </div>
-                <div className="flex items-start justify-between gap-4">
-                  <dt className="text-slate-400">Kelompok</dt>
-                  <dd className="text-right font-medium capitalize">
+
+                <div className="flex items-center justify-between rounded-xl bg-slate-50 dark:bg-slate-950/40 px-4 py-3 border border-slate-100 dark:border-slate-900/60">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">Kelompok Keuangan</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 capitalize">
                     {parsedData.kelompokKeuangan.replace(/_/g, " ")}
-                  </dd>
+                  </span>
                 </div>
-              </dl>
+
+                {parsedData.deskripsi && (
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 px-4 py-3 border border-slate-100 dark:border-slate-900/60">
+                    <span className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Deskripsi</span>
+                    <span className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+                      {parsedData.deskripsi}
+                    </span>
+                  </div>
+                )}
+              </div>
             ) : (
-              <p className="mt-4 max-w-sm text-sm leading-6 text-slate-300">
-                Belum ada hasil parsing. Rekam atau tempel kalimat transaksi untuk
-                mulai mengisi snapshot.
-              </p>
+              <div className="mt-5 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 p-5 text-center">
+                <HelpCircle className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-600" />
+                <p className="mt-3 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                  Belum ada transaksi diparsing. Rekam atau ketik data di Voice Ledger untuk mengisi snapshot ini secara dinamis.
+                </p>
+              </div>
             )}
           </div>
 
-          <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.05)]">
-            <p className="text-sm font-semibold text-amber-900">Tahap berikutnya</p>
-            <p className="mt-2 text-sm leading-6 text-amber-950/80">
-              Setelah voice ledger stabil, saya akan lanjutkan generator caption
-              produk dan dashboard risiko realtime.
+          {/* Next Steps / Info Card */}
+          <div className="rounded-3xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/40 dark:bg-indigo-950/10 p-6 transition-colors duration-300">
+            <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4" />
+              Info Pengembangan
+            </h3>
+            <p className="mt-2 text-xs sm:text-sm leading-relaxed text-indigo-950/80 dark:text-indigo-200/80">
+              Setelah voice ledger berhasil diparsing, data otomatis masuk ke tabel database Supabase dan memicu kalkulasi margin laba serta rasio likuiditas UMKM di bawah.
             </p>
           </div>
         </aside>
       </section>
 
-      <section className="grid gap-4">
+      {/* Realtime Stats Section */}
+      <section className="grid gap-4 mt-2">
         <DashboardStats />
       </section>
     </main>
   );
 }
+
