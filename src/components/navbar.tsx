@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
-import { Sun, Moon, Sparkles, LayoutDashboard, Database } from "lucide-react";
+import { Sun, Moon, Sparkles, LayoutDashboard, Database, TrendingUp } from "lucide-react";
 import { getBrowserSupabaseClient } from "@/lib/supabase";
 
 export function Navbar() {
@@ -14,6 +14,7 @@ export function Navbar() {
   const links = [
     { href: "/", label: "Dashboard Keuangan", icon: LayoutDashboard },
     { href: "/marketing", label: "Visual Pemasaran", icon: Sparkles },
+    { href: "/analisis", label: "Analisis Likuiditas", icon: TrendingUp },
   ];
 
   return (

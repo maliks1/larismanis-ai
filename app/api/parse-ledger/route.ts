@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase";
 
 // export const runtime = "edge";
 
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+
 const TransaksiSchema = z.object({
   tipeTransaksi: z.enum(["pemasukan", "pengeluaran"]),
   nominal: z.number().int().positive(),
@@ -34,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { object: dataTransaksi } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google(GEMINI_MODEL),
       schema: TransaksiSchema,
       system: [
         "Anda adalah akuntan profesional untuk UMKM Indonesia.",

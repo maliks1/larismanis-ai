@@ -41,6 +41,7 @@ Create a `.env.local` with at least these values:
 
 ```bash
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_key
+GEMINI_MODEL=gemini-2.5-flash
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```

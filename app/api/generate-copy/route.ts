@@ -6,6 +6,8 @@ import { createSupabaseServerClient } from "@/lib/supabase";
 
 // export const runtime = "edge";
 
+const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+
 const CopyRequestSchema = z.object({
   platform: z.enum(["whatsapp", "instagram", "tiktok"]),
   style: z.enum(["formal", "santai", "persuasif"]),
@@ -118,7 +120,7 @@ export async function POST(request: NextRequest) {
     const styleGuide = STYLE_GUIDE[parsed.data.style];
 
     const { object: generatedCopy } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google(GEMINI_MODEL),
       schema: CopyResultSchema,
       system: [
         "Anda adalah copywriter senior untuk UMKM Indonesia.",

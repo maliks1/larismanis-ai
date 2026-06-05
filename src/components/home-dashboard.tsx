@@ -4,7 +4,6 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet, HelpCircle } from "lucide-react";
-import { DashboardStats } from "@/components/dashboard-stats";
 
 const VoiceLedgerInput = dynamic(
   () => import("@/components/voice-ledger").then((module) => module.VoiceLedgerInput),
@@ -192,16 +191,12 @@ export function HomeDashboard() {
               Info Pengembangan
             </h3>
             <p className="mt-2 text-xs sm:text-sm leading-relaxed text-indigo-950/80 dark:text-indigo-200/80">
-              Setelah voice ledger berhasil diparsing, data otomatis masuk ke tabel database Supabase dan memicu kalkulasi margin laba serta rasio likuiditas UMKM di bawah.
+              Setelah voice ledger berhasil diparsing, data otomatis masuk ke tabel database Supabase dan memicu kalkulasi margin laba serta rasio likuiditas UMKM di halaman Analisis Likuiditas.
             </p>
           </div>
         </aside>
       </section>
 
-      {/* Realtime Stats Section */}
-      <section className="grid gap-4 mt-2">
-        <DashboardStats />
-      </section>
     </main>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mic, MicOff, RotateCcw, Send } from "lucide-react";
 
 type ParsedTransaction = {
@@ -20,153 +20,162 @@ type VoiceLedgerInputProps = {
   onProcessingComplete: (parsedData: ParsedTransaction) => void;
 };
 
-type SpeechRecognitionResultLike = {
-  transcript?: string;
-};
-
-type SpeechRecognitionResultEventLike = {
-  resultIndex: number;
-  results: Array<Array<SpeechRecognitionResultLike>>;
-};
-
-type SpeechRecognitionLike = {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-  onresult: ((event: SpeechRecognitionResultEventLike) => void) | null;
-  onerror: ((event: { error?: string }) => void) | null;
-  onend: (() => void) | null;
-};
-
-type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
-
-declare global {
-  interface Window {
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-    SpeechRecognition?: SpeechRecognitionConstructor;
-  }
-}
-
 const emptyTranscript =
   "Contoh: pemasukan dari penjualan 3 goceng, biaya listrik 50 rebu, beli stok 2 juta.";
 
 export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps) {
-  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const mountedRef = useRef(true);
+
   const [isMounted, setIsMounted] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [statusMessage, setStatusMessage] = useState("Siap mendengarkan transaksi.");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [supported, setSupported] = useState(true);
 
-  const speechRecognition = useMemo(() => {
-    if (typeof window === "undefined") {
-      return null;
-    }
-
-    return window.SpeechRecognition ?? window.webkitSpeechRecognition ?? null;
-  }, []);
-
-  // Defer interactive UI rendering until after hydration completes
+  // Set mounted status, verify MediaRecorder support and clean up on unmount
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
-  }, []);
-
-  /*
-  useEffect(() => {
-    if (!speechRecognition) {
-      return;
-    }
-
-    const recognition = new speechRecognition();
-    recognition.lang = "id-ID";
-    recognition.continuous = true;
-    recognition.interimResults = true;
-
-    recognition.onresult = (event) => {
-      let nextTranscript = "";
-
-      for (let index = event.resultIndex; index < event.results.length; index += 1) {
-        const result = event.results[index];
-        nextTranscript += result[0]?.transcript ?? "";
-      }
-
-      setTranscript(nextTranscript.trim());
-      setStatusMessage("Transkrip diperbarui secara real-time.");
-    };
-
-    recognition.onerror = (event) => {
-      console.error("SpeechRecognition error:", event.error);
-      
-      // 1. Auto-reconnect jika error network atau aborted (hang)
-      if (event.error === 'network' || event.error === 'aborted') {
-        console.warn("⚠️ Network error/aborted. Attempting to auto-restart in 1 second...");
-        setTimeout(() => {
-          try {
-            // Coba start ulang
-            recognition.start();
-          } catch (e) {
-            console.log("Recognition is already running or failed to restart.");
-          }
-        }, 1000); // Tunda 1 detik agar tidak kena rate-limit Google
-      } 
-      
-      // 2. Handle jika user menolak permission mikrofon
-      else if (event.error === 'not-allowed') {
-        alert("Akses mikrofon ditolak. Mohon izinkan di pengaturan browser/HP Anda.");
-        setIsListening(false); // Update state UI
-      }
-      
-      // 3. Handle jika tidak ada suara (no-speech) - biarkan saja atau restart
-      else if (event.error === 'no-speech') {
-        console.log("No speech detected. Keeping mic alive...");
-      }
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-      setStatusMessage("Mic berhenti merekam.");
-    };
-
-    recognitionRef.current = recognition;
+    mountedRef.current = true;
+    
+    setSupported(
+      typeof window !== "undefined" &&
+      !!navigator.mediaDevices &&
+      typeof MediaRecorder !== "undefined"
+    );
 
     return () => {
-      recognition.abort();
-      recognitionRef.current = null;
+      mountedRef.current = false;
+      // Stop recording if active when component is unmounting
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch (error) {
+          console.log("Failed to stop media recorder on unmount:", error);
+        }
+      }
     };
-  }, [speechRecognition]);
-  */
+  }, []);
 
-  const supported = Boolean(speechRecognition);
+  const handleAudioTranscribe = async (blob: Blob) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
+    setStatusMessage("Menerjemahkan suara ke teks...");
 
-  const toggleListening = () => {
-    if (!supported) {
-      alert("SpeechRecognition belum didukung. Gunakan Chrome atau Safari versi terbaru.");
-      return;
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (typeof reader.result === "string") {
+            resolve(reader.result.split(",")[1]);
+          } else {
+            reject(new Error("Failed to read audio blob"));
+          }
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+
+      const response = await fetch("/api/transcribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          audio: base64,
+          mimeType: blob.type,
+        }),
+      });
+
+      const payload = (await response.json()) as {
+        text?: string;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.text) {
+        throw new Error(payload.error ?? "Gagal menerjemahkan suara ke teks.");
+      }
+
+      if (mountedRef.current) {
+        setTranscript((prev) => {
+          const spacing = prev.trim() ? " " : "";
+          return prev + spacing + (payload.text ?? "");
+        });
+        setStatusMessage("Suara berhasil diubah ke teks.");
+      }
+    } catch (error) {
+      console.error("Transcription error:", error);
+      if (mountedRef.current) {
+        const message = error instanceof Error ? error.message : "Gagal mentranskripsi audio.";
+        setErrorMessage(message);
+        setStatusMessage("Penerjemahan gagal.");
+      }
+    } finally {
+      if (mountedRef.current) {
+        setIsSubmitting(false);
+      }
     }
+  };
 
-    const recognition = recognitionRef.current;
-    if (!recognition) {
+  const startRecording = async () => {
+    if (!supported) {
+      alert("Perekaman audio tidak didukung pada browser Anda.");
       return;
     }
 
     setErrorMessage(null);
+    audioChunksRef.current = [];
 
-    /*
-    if (isListening) {
-      recognition.stop();
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        // Stop all tracks on the stream to release the mic
+        stream.getTracks().forEach((track) => track.stop());
+
+        const audioBlob = new Blob(audioChunksRef.current, { type: mediaRecorder.mimeType });
+        if (mountedRef.current) {
+          await handleAudioTranscribe(audioBlob);
+        }
+      };
+
+      mediaRecorder.start();
+      setIsListening(true);
+      setStatusMessage("Mendengarkan transaksi... Klik kembali untuk selesai.");
+    } catch (error) {
+      console.error("Failed to start recording:", error);
+      setErrorMessage("Gagal mengakses mikrofon. Pastikan Anda mengizinkan akses mikrofon.");
       setIsListening(false);
-      setStatusMessage("Merekam dihentikan.");
-      return;
     }
+  };
 
-    recognition.start();
-    setIsListening(true);
-    setStatusMessage("Mendengarkan transaksi...");
-    */
+  const stopRecording = () => {
+    const mediaRecorder = mediaRecorderRef.current;
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+      setIsListening(false);
+      setStatusMessage("Memproses rekaman...");
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopRecording();
+    } else {
+      void startRecording();
+    }
   };
 
   const resetTranscript = () => {
@@ -217,7 +226,7 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
     <div className="space-y-4">
       {!supported ? (
         <div className="rounded-2xl border border-red-200 bg-red-50 dark:border-red-950/20 dark:bg-red-950/10 px-4 py-3 text-sm text-red-900 dark:text-red-400">
-          Web Speech API tidak tersedia pada browser Anda. Gunakan Google Chrome atau Safari versi terbaru.
+          Perekaman audio tidak didukung pada browser Anda. Silakan gunakan browser Google Chrome, Safari, atau Firefox versi terbaru.
         </div>
       ) : null}
 
