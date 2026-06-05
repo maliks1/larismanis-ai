@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Activity, RefreshCw, WifiOff } from "lucide-react";
-import { createSupabaseClient } from "@/lib/supabase";
+import { getBrowserSupabaseClient } from "@/lib/supabase";
 import {
   calculateFinancialMetrics,
   formatMetricValue,
@@ -30,7 +30,7 @@ function MetricCard({ label, value, hint }: MetricCardProps) {
 }
 
 export function DashboardStats() {
-  const supabase = useMemo(() => createSupabaseClient(), []);
+  const supabase = getBrowserSupabaseClient();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [isLoading, setIsLoading] = useState(Boolean(supabase));
   const [errorMessage, setErrorMessage] = useState<string | null>(null);

@@ -1,10 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet } from "lucide-react";
 import { DashboardStats } from "@/components/dashboard-stats";
-import { VoiceLedgerInput } from "@/components/voice-ledger";
+
+const VoiceLedgerInput = dynamic(
+  () => import("@/components/voice-ledger").then((module) => module.VoiceLedgerInput),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        Memuat fitur suara...
+      </div>
+    ),
+  }
+);
 
 type ParsedTransaksi = {
   tipeTransaksi: "pemasukan" | "pengeluaran";

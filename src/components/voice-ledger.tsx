@@ -75,6 +75,7 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
     setIsMounted(true);
   }, []);
 
+  /*
   useEffect(() => {
     if (!speechRecognition) {
       return;
@@ -137,6 +138,7 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
       recognitionRef.current = null;
     };
   }, [speechRecognition]);
+  */
 
   const supported = Boolean(speechRecognition);
 
@@ -153,6 +155,7 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
 
     setErrorMessage(null);
 
+    /*
     if (isListening) {
       recognition.stop();
       setIsListening(false);
@@ -163,6 +166,7 @@ export function VoiceLedgerInput({ onProcessingComplete }: VoiceLedgerInputProps
     recognition.start();
     setIsListening(true);
     setStatusMessage("Mendengarkan transaksi...");
+    */
   };
 
   const resetTranscript = () => {

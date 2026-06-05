@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 
 const CopyRequestSchema = z.object({
   platform: z.enum(["whatsapp", "instagram", "tiktok"]),

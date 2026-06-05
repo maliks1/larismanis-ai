@@ -30,3 +30,22 @@ export function createSupabaseServerClient() {
   ensureSupabaseServerEnv();
   return createClient(supabaseUrl, supabaseServiceRoleKey || supabaseAnonKey);
 }
+
+let browserClientInstance: ReturnType<typeof createClient> | null = null;
+
+/**
+ * Returns a singleton Supabase client for browser/client-side usage.
+ * This ensures only one GoTrueClient instance is created, preventing
+ * the "Multiple GoTrueClient instances detected" warning.
+ */
+export function getBrowserSupabaseClient() {
+  if (!hasSupabaseConfig()) {
+    return null;
+  }
+
+  if (!browserClientInstance) {
+    browserClientInstance = createClient(supabaseUrl, supabaseAnonKey);
+  }
+
+  return browserClientInstance;
+}
