@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/theme-provider";
-import { Sun, Moon, Sparkles, LayoutDashboard, Database, TrendingUp } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  Sparkles,
+  LayoutDashboard,
+  Database,
+  TrendingUp,
+  FileText,
+  Target,
+} from "lucide-react";
 import { getBrowserSupabaseClient } from "@/lib/supabase";
 
 export function Navbar() {
@@ -13,8 +22,10 @@ export function Navbar() {
 
   const links = [
     { href: "/", label: "Dashboard Keuangan", icon: LayoutDashboard },
-    { href: "/marketing", label: "Visual Pemasaran", icon: Sparkles },
+    { href: "/riwayat", label: "Riwayat Transaksi", icon: FileText },
+    { href: "/budget", label: "Budget & Target", icon: Target },
     { href: "/analisis", label: "Analisis Likuiditas", icon: TrendingUp },
+    { href: "/marketing", label: "Visual Pemasaran", icon: Sparkles },
   ];
 
   return (
@@ -28,7 +39,8 @@ export function Navbar() {
             </div>
             <div>
               <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-                LarisManis <span className="text-indigo-600 dark:text-indigo-400">AI</span>
+                LarisManis{" "}
+                <span className="text-indigo-600 dark:text-indigo-400">AI</span>
               </span>
             </div>
           </Link>
@@ -64,10 +76,16 @@ export function Navbar() {
                   ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
                   : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
               }`}
-              title={supabase ? "Supabase Terkoneksi" : "Supabase Belum Dikonfigurasi"}
+              title={
+                supabase
+                  ? "Supabase Terkoneksi"
+                  : "Supabase Belum Dikonfigurasi"
+              }
             >
               <Database className="h-3 w-3" />
-              <span className="hidden md:inline">{supabase ? "Terkoneksi" : "Offline Mode"}</span>
+              <span className="hidden md:inline">
+                {supabase ? "Terkoneksi" : "Offline Mode"}
+              </span>
             </div>
 
             {/* Dark Mode Toggle */}

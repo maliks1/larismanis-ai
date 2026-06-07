@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database.types";
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
@@ -13,7 +14,9 @@ export function ensureSupabaseServerEnv() {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL environment variable.");
   }
   if (!supabaseServiceRoleKey && !supabaseAnonKey) {
-    throw new Error("Missing both SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.");
+    throw new Error(
+      "Missing both SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.",
+    );
   }
 }
 
@@ -22,16 +25,19 @@ export function createSupabaseClient() {
     return null;
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey);
+  return createClient<Database>(supabaseUrl, supabaseAnonKey);
 }
 
 export function createSupabaseServerClient() {
   // server client uses service role key if available, otherwise falls back to anon key
   ensureSupabaseServerEnv();
-  return createClient(supabaseUrl, supabaseServiceRoleKey || supabaseAnonKey);
+  return createClient<Database>(
+    supabaseUrl,
+    supabaseServiceRoleKey || supabaseAnonKey,
+  );
 }
 
-let browserClientInstance: ReturnType<typeof createClient> | null = null;
+let browserClientInstance: SupabaseClient<Database> | null = null;
 
 /**
  * Returns a singleton Supabase client for browser/client-side usage.
@@ -44,7 +50,10 @@ export function getBrowserSupabaseClient() {
   }
 
   if (!browserClientInstance) {
-    browserClientInstance = createClient(supabaseUrl, supabaseAnonKey);
+    browserClientInstance = createClient<Database>(
+      supabaseUrl,
+      supabaseAnonKey,
+    );
   }
 
   return browserClientInstance;

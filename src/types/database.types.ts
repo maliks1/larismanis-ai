@@ -41,7 +41,32 @@ export type Database = {
           created_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["transactions"]["Insert"]>;
+        Relationships: [];
+      };
+      budgets: {
+        Row: {
+          id: string;
+          kategori: string;
+          tipe_transaksi: "pemasukan" | "pengeluaran";
+          target_nominal: number;
+          periode_bulan: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          kategori: string;
+          tipe_transaksi: "pemasukan" | "pengeluaran";
+          target_nominal: number;
+          periode_bulan: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["budgets"]["Insert"]>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
