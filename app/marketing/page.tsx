@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Camera, Hash, ImagePlus, Loader2, Sparkles, Copy, Check } from "lucide-react";
 
@@ -388,7 +387,7 @@ export default function MarketingPage() {
               <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 p-6 text-center">
                 <Camera className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-650" />
                 <p className="mt-3.5 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                  Belum ada hasil promosi. Pilih gambar produk Anda di sebelah kiri, atur platform serta gaya bahasa, lalu klik "Buat Tulisan Jualan".
+                  Belum ada hasil promosi. Pilih gambar produk Anda di sebelah kiri, atur platform serta gaya bahasa, lalu klik &quot;Buat Tulisan Jualan&quot;.
                 </p>
               </div>
             )}

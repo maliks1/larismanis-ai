@@ -14,29 +14,6 @@ const formatCurrency = (amount: number): string => {
   return "Rp" + amount.toLocaleString("id-ID");
 };
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const kelompokLabels: Record<string, string> = {
-  aset_lancar: "Aset Lancar",
-  kewajiban_jangka_pendek: "Kewajiban Jangka Pendek",
-  pendapatan: "Pendapatan",
-  beban_operasional: "Beban Operasional",
-};
-
-const urgencyLabels: Record<string, string> = {
-  rendah: "Rendah",
-  sedang: "Sedang",
-  tinggi: "Tinggi",
-};
 
 export const exportTransactionsToPDF = (
   transactions: TransactionRow[],

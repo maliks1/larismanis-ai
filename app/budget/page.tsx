@@ -3,9 +3,8 @@
 import { BudgetTarget } from "@/components/budget-target";
 import { FileText } from "lucide-react";
 import { exportBudgetReportToPDF } from "@/lib/export-pdf";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { id } from "date-fns/locale";
 import { getBrowserSupabaseClient } from "@/lib/supabase";
 import type { Database } from "@/types/database.types";
 
@@ -25,13 +24,7 @@ export default function BudgetPage() {
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    if (supabase) {
-      void Promise.all([loadTransactions(), loadBudgets()]);
-    }
-  }, [supabase]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!supabase) return;
 
     const { data } = await supabase
@@ -42,9 +35,9 @@ export default function BudgetPage() {
     if (data) {
       setTransactions(data as TransactionRow[]);
     }
-  };
+  }, [supabase]);
 
-  const loadBudgets = async () => {
+  const loadBudgets = useCallback(async () => {
     if (!supabase) return;
 
     const { data } = await supabase.from("budgets").select("*").order("created_at", { ascending: false });
@@ -52,7 +45,15 @@ export default function BudgetPage() {
     if (data) {
       setBudgets(data as Budget[]);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (supabase) {
+      requestAnimationFrame(() => {
+        void Promise.all([loadTransactions(), loadBudgets()]);
+      });
+    }
+  }, [supabase, loadTransactions, loadBudgets]);
 
   const handleExportPDF = () => {
     if (budgets.length === 0) {

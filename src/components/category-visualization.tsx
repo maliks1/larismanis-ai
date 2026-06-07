@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
@@ -48,23 +48,28 @@ type ChartData = {
   color: string;
 };
 
+// Custom tooltip for charts
+const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; name: string; color: string }> }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-lg dark:border-slate-800 dark:bg-slate-900/95">
+        <p className="text-xs font-semibold text-slate-900 dark:text-white">{payload[0].name}</p>
+        <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+          Rp{payload[0].value.toLocaleString("id-ID")}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export function CategoryVisualization() {
   const supabase = getBrowserSupabaseClient();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(Boolean(supabase));
+  const [error, setError] = useState<string | null>(supabase ? null : "Supabase tidak terkonfigurasi");
 
-  useEffect(() => {
-    if (!supabase) {
-      setError("Supabase tidak terkonfigurasi");
-      setIsLoading(false);
-      return;
-    }
-
-    void loadTransactions();
-  }, [supabase]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!supabase) return;
 
     setIsLoading(true);
@@ -82,7 +87,15 @@ export function CategoryVisualization() {
     }
 
     setIsLoading(false);
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (supabase) {
+      requestAnimationFrame(() => {
+        void loadTransactions();
+      });
+    }
+  }, [supabase, loadTransactions]);
 
   // Calculate category breakdown for income
   const getCategoryIncomeData = (): ChartData[] => {
@@ -154,20 +167,7 @@ export function CategoryVisualization() {
 
   const netBalance = totalIncome - totalExpense;
 
-  // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ value: number; name: string; color: string }> }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-lg dark:border-slate-800 dark:bg-slate-900/95">
-          <p className="text-xs font-semibold text-slate-900 dark:text-white">{payload[0].name}</p>
-          <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
-            Rp{payload[0].value.toLocaleString("id-ID")}
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
+
 
   if (isLoading) {
     return (

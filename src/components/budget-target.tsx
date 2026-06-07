@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
@@ -57,8 +57,8 @@ export function BudgetTarget() {
   const supabase = getBrowserSupabaseClient();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(Boolean(supabase));
+  const [error, setError] = useState<string | null>(supabase ? null : "Supabase tidak terkonfigurasi");
   const [showForm, setShowForm] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [formData, setFormData] = useState<BudgetFormData>({
@@ -77,17 +77,7 @@ export function BudgetTarget() {
     new Set([...DEFAULT_CATEGORIES, ...transactionCategories]),
   ).sort();
 
-  useEffect(() => {
-    if (!supabase) {
-      setError("Supabase tidak terkonfigurasi");
-      setIsLoading(false);
-      return;
-    }
-
-    void Promise.all([loadTransactions(), loadBudgets()]);
-  }, [supabase]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!supabase) return;
 
     const { data, error } = await supabase
@@ -100,9 +90,9 @@ export function BudgetTarget() {
     } else {
       setTransactions((data as TransactionRow[]) ?? []);
     }
-  };
+  }, [supabase]);
 
-  const loadBudgets = async () => {
+  const loadBudgets = useCallback(async () => {
     if (!supabase) return;
 
     const { data, error } = await supabase
@@ -117,7 +107,18 @@ export function BudgetTarget() {
     } else {
       setBudgets((data as Budget[]) ?? []);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (supabase) {
+      requestAnimationFrame(() => {
+        setIsLoading(true);
+        void Promise.all([loadTransactions(), loadBudgets()]).finally(() => {
+          setIsLoading(false);
+        });
+      });
+    }
+  }, [supabase, loadTransactions, loadBudgets]);
 
   const saveBudget = async () => {
     if (!supabase || !formData.kategori || formData.target_nominal <= 0) {

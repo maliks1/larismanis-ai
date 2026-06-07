@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import {
@@ -10,7 +10,6 @@ import {
   Filter,
   RefreshCw,
   Calendar,
-  ChevronDown,
   Trash2,
 } from "lucide-react";
 import { getBrowserSupabaseClient } from "@/lib/supabase";
@@ -53,8 +52,10 @@ export function TransactionHistory() {
   const [filteredTransactions, setFilteredTransactions] = useState<
     TransactionRow[]
   >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(Boolean(supabase));
+  const [error, setError] = useState<string | null>(
+    supabase ? null : "Supabase tidak terkonfigurasi"
+  );
   const [showFilters, setShowFilters] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -71,21 +72,7 @@ export function TransactionHistory() {
     new Set(transactions.map((t) => t.kategori)),
   ).sort();
 
-  useEffect(() => {
-    if (!supabase) {
-      setError("Supabase tidak terkonfigurasi");
-      setIsLoading(false);
-      return;
-    }
-
-    void loadTransactions();
-  }, [supabase]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [filters, transactions]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!supabase) return;
 
     setIsLoading(true);
@@ -103,9 +90,9 @@ export function TransactionHistory() {
     }
 
     setIsLoading(false);
-  };
+  }, [supabase]);
 
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let result = [...transactions];
 
     // Search filter
@@ -144,7 +131,21 @@ export function TransactionHistory() {
     }
 
     setFilteredTransactions(result);
-  };
+  }, [filters, transactions]);
+
+  useEffect(() => {
+    if (supabase) {
+      requestAnimationFrame(() => {
+        void loadTransactions();
+      });
+    }
+  }, [supabase, loadTransactions]);
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      applyFilters();
+    });
+  }, [filters, transactions, applyFilters]);
 
   const handleDelete = async (id: string) => {
     if (!supabase) return;

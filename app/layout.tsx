@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "LarisManis AI - Asisten Keuangan Suara & Pemasaran Visual UMKM",
   description:
     "Asisten keuangan suara dan generator pemasaran visual untuk UMKM Indonesia.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

@@ -4,7 +4,7 @@ import { TransactionHistory } from "@/components/transaction-history";
 import { CategoryVisualization } from "@/components/category-visualization";
 import { FileText } from "lucide-react";
 import { exportTransactionsToPDF } from "@/lib/export-pdf";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getBrowserSupabaseClient } from "@/lib/supabase";
 import type { Database } from "@/types/database.types";
 
@@ -15,13 +15,7 @@ export default function RiwayatPage() {
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    if (supabase) {
-      void loadTransactions();
-    }
-  }, [supabase]);
-
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     if (!supabase) return;
 
     const { data } = await supabase
@@ -32,7 +26,15 @@ export default function RiwayatPage() {
     if (data) {
       setTransactions(data as TransactionRow[]);
     }
-  };
+  }, [supabase]);
+
+  useEffect(() => {
+    if (supabase) {
+      requestAnimationFrame(() => {
+        void loadTransactions();
+      });
+    }
+  }, [supabase, loadTransactions]);
 
   const handleExportPDF = async () => {
     if (transactions.length === 0) {
