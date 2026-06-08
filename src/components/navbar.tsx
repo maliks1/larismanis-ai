@@ -91,7 +91,7 @@ export function Navbar() {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-850 transition cursor-pointer"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 transition cursor-pointer"
               aria-label="Toggle theme"
             >
               {theme === "light" ? (

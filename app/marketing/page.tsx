@@ -136,7 +136,7 @@ export default function MarketingPage() {
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
             Visual Marketing Generator
           </h1>
-          <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-350 max-w-3xl">
+          <p className="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400 max-w-3xl">
             Unggah foto produk usaha Anda, lalu biarkan AI menganalisis isi visual dan menghasilkan rancangan promosi tertulis yang disesuaikan untuk berbagai kanal media sosial.
           </p>
         </div>
@@ -221,7 +221,7 @@ export default function MarketingPage() {
                       className={`w-full rounded-xl border px-4 py-3 text-left transition duration-300 cursor-pointer ${
                         active
                           ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-300"
-                          : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-950/50"
+                      : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800"
                       }`}
                     >
                       <div className="text-xs sm:text-sm font-bold">{option.title}</div>
@@ -248,7 +248,7 @@ export default function MarketingPage() {
                       className={`w-full rounded-xl border px-4 py-3 text-left transition duration-300 cursor-pointer ${
                         active
                           ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-300"
-                          : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-355 hover:bg-slate-50 dark:hover:bg-slate-950/50"
+                      : "border-slate-200 dark:border-slate-800 bg-transparent text-slate-700 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-950/50"
                       }`}
                     >
                       <div className="text-xs sm:text-sm font-bold">{option.title}</div>
@@ -385,7 +385,7 @@ export default function MarketingPage() {
               </div>
             ) : (
               <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-800/80 bg-slate-50/40 dark:bg-slate-900/20 p-6 text-center">
-                <Camera className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-650" />
+                <Camera className="mx-auto h-8 w-8 text-slate-400 dark:text-slate-500" />
                 <p className="mt-3.5 text-xs sm:text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                   Belum ada hasil promosi. Pilih gambar produk Anda di sebelah kiri, atur platform serta gaya bahasa, lalu klik &quot;Buat Tulisan Jualan&quot;.
                 </p>
@@ -398,7 +398,7 @@ export default function MarketingPage() {
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Konfigurasi Generator
             </span>
-            <div className="mt-3.5 space-y-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-450">
+                <div className="mt-3.5 space-y-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               <div className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-850">
                 <span>Platform Media</span>
                 <span className="font-bold text-slate-900 dark:text-white">{selectedPlatform?.title}</span>
