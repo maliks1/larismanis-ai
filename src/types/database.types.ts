@@ -46,21 +46,34 @@ export type Database = {
       budgets: {
         Row: {
           id: string;
+          user_id: string;
           kategori: string;
           tipe_transaksi: "pemasukan" | "pengeluaran";
           target_nominal: number;
           periode_bulan: string;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
+          user_id?: string;
           kategori: string;
           tipe_transaksi: "pemasukan" | "pengeluaran";
           target_nominal: number;
           periode_bulan: string;
           created_at?: string;
+          updated_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["budgets"]["Insert"]>;
+        Update: {
+          id?: string;
+          user_id?: string;
+          kategori?: string;
+          tipe_transaksi?: "pemasukan" | "pengeluaran";
+          target_nominal?: number;
+          periode_bulan?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
         Relationships: [];
       };
     };
