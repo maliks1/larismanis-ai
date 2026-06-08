@@ -36,8 +36,8 @@ export default function LoginPage() {
   }, [supabase, router]);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full items-center justify-center bg-slate-50 px-4 py-8 dark:bg-slate-950 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md rounded-3xl border border-slate-200/50 bg-white/80 p-6 shadow-xl backdrop-blur-md dark:border-slate-800/50 dark:bg-slate-900/80">
+    <div className="fixed inset-0 h-screen w-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-950 flex items-center justify-center">
+      <div className="no-scrollbar w-full max-w-md max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/50 bg-white/95 p-6 shadow-2xl backdrop-blur-md dark:border-slate-700/50 dark:bg-slate-900/95 sm:p-8">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
             🛒 LarisManis AI
@@ -49,6 +49,6 @@ export default function LoginPage() {
 
         <AuthUI />
       </div>
-    </main>
+    </div>
   );
 }
