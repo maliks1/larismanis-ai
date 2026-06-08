@@ -68,6 +68,14 @@ export function CategoryVisualization() {
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [isLoading, setIsLoading] = useState(Boolean(supabase));
   const [error, setError] = useState<string | null>(supabase ? null : "Supabase tidak terkonfigurasi");
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Ensure charts only render after client-side mount to avoid SSR hydration mismatch
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setIsMounted(true);
+    });
+  }, []);
 
   const loadTransactions = useCallback(async () => {
     if (!supabase) return;
@@ -265,9 +273,9 @@ export function CategoryVisualization() {
               Breakdown Pemasukan per Kategori
             </h3>
           </div>
-          {incomeData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+          {isMounted && incomeData.length > 0 ? (
+            <div className="h-[256px]" style={{ minWidth: '300px', minHeight: '200px' }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={200}>
                 <PieChart>
                   <Pie
                     data={incomeData}
@@ -293,9 +301,7 @@ export function CategoryVisualization() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center text-sm text-slate-500 dark:text-slate-400">
-              Tidak ada data pemasukan
-            </div>
+            <div className="h-[256px] w-full animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
           )}
         </div>
 
@@ -307,9 +313,9 @@ export function CategoryVisualization() {
               Breakdown Pengeluaran per Kategori
             </h3>
           </div>
-          {expenseData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+          {isMounted && expenseData.length > 0 ? (
+            <div className="h-[256px]" style={{ minWidth: '300px', minHeight: '200px' }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={200}>
                 <PieChart>
                   <Pie
                     data={expenseData}
@@ -335,9 +341,7 @@ export function CategoryVisualization() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center text-sm text-slate-500 dark:text-slate-400">
-              Tidak ada data pengeluaran
-            </div>
+            <div className="h-[256px] w-full animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
           )}
         </div>
 
@@ -349,9 +353,9 @@ export function CategoryVisualization() {
               Tren Pemasukan vs Pengeluaran (6 Bulan Terakhir)
             </h3>
           </div>
-          {trendData.length > 0 ? (
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
+          {isMounted && trendData.length > 0 ? (
+            <div className="h-[256px]" style={{ minWidth: '300px', minHeight: '200px' }}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={300} minHeight={200}>
                 <BarChart data={trendData} barGap={8}>
                   <XAxis
                     dataKey="bulan"
@@ -394,9 +398,7 @@ export function CategoryVisualization() {
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex h-64 items-center justify-center text-sm text-slate-500 dark:text-slate-400">
-              Tidak ada data tren
-            </div>
+            <div className="h-[256px] w-full animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
           )}
         </div>
       </div>
