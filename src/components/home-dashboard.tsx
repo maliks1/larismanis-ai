@@ -79,10 +79,11 @@ export function HomeDashboard() {
           <div className="shrink-0">
             <Link
               href="/marketing"
+              style={{ color: 'white !important' }}
               className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-500 transition cursor-pointer"
             >
-              Buka Generator Pemasaran
-              <ArrowRight className="h-4 w-4" />
+              <span style={{ color: 'white' }}>Buka Generator Pemasaran</span>
+              <ArrowRight className="h-4 w-4 text-white" />
             </Link>
           </div>
         </div>

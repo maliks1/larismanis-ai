@@ -85,7 +85,7 @@ html {
 }
 
 a {
-  color: inherit;
+  color: unset !important;
   text-decoration: none;
 }
 
