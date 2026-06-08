@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { ArrowRight, Mic, ShieldCheck, Sparkles, Wallet, HelpCircle } from "lucide-react";
+import { Sparkles, HelpCircle } from "lucide-react";
 
 const VoiceLedgerInput = dynamic(
   () => import("@/components/voice-ledger").then((module) => module.VoiceLedgerInput),
@@ -31,84 +30,11 @@ type ParsedTransaksi = {
     | "beban_operasional";
 };
 
-const highlights = [
-  {
-    icon: Mic,
-    title: "Catat Dengan Suara",
-    description: "Ucapkan transaksi Anda dalam Bahasa Indonesia kasual, lalu simpan instan.",
-    color: "from-blue-500/10 to-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-  },
-  {
-    icon: Wallet,
-    title: "Klasifikasi Otomatis",
-    description: "Nominal, kategori, urgensi, dan kelompok keuangan terpetakan secara pintar.",
-    color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Analisis Risiko Realtime",
-    description: "Dasbor otomatis menghitung rasio lancar dan margin laba bersih UMKM Anda.",
-    color: "from-amber-500/10 to-orange-500/10 text-amber-600 dark:text-amber-400",
-  },
-];
-
 export function HomeDashboard() {
   const [parsedData, setParsedData] = useState<ParsedTransaksi | null>(null);
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:px-8">
-      {/* Hero Header */}
-      <header className="relative overflow-hidden rounded-3xl border border-slate-200/50 bg-white/60 dark:border-slate-800/60 dark:bg-slate-900/40 p-6 sm:p-8 shadow-sm backdrop-blur-md transition-colors duration-300">
-        {/* Glow Effects */}
-        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-          <div className="max-w-3xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 dark:bg-indigo-950/40 px-3 py-1 text-xs font-semibold text-indigo-700 dark:text-indigo-300">
-              <Sparkles className="h-3.5 w-3.5" />
-              Asisten Cerdas UMKM Indonesia
-            </span>
-            <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
-              Asisten Keuangan Suara & Pemasaran Visual
-            </h1>
-            <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-350 sm:text-lg">
-              Ubah rekaman suara kasual menjadi pembukuan rapi, pantau kesehatan keuangan usaha secara langsung, dan buat materi promosi instan.
-            </p>
-          </div>
-          <div className="shrink-0">
-            <Link
-              href="/marketing"
-              style={{ color: 'white !important' }}
-              className="inline-flex items-center gap-2 rounded-2xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-indigo-200 dark:shadow-none hover:bg-indigo-500 transition cursor-pointer"
-            >
-              <span style={{ color: 'white' }}>Buka Generator Pemasaran</span>
-              <ArrowRight className="h-4 w-4 text-white" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Highlights Grid */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {highlights.map((item) => (
-            <article
-              key={item.title}
-              className="relative rounded-2xl border border-slate-200/60 dark:border-slate-800/80 bg-white/40 dark:bg-slate-900/20 p-5 hover:border-slate-300 dark:hover:border-slate-700 transition duration-300"
-            >
-              <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr ${item.color}`}>
-                <item.icon className="h-5 w-5" />
-              </div>
-              <h2 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
-                {item.title}
-              </h2>
-              <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                {item.description}
-              </p>
-            </article>
-          ))}
-        </div>
-      </header>
-
       {/* Main Core Section */}
       <section className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
         {/* Left Column: Voice Ledger */}

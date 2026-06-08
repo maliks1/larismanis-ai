@@ -14,11 +14,20 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Check current session first
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        router.push("/dashboard");
+        router.refresh();
+      }
+    });
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        router.push("/");
+      // Only redirect if session exists AND event is relevant (not SIGNED_OUT)
+      if (session && event !== "SIGNED_OUT") {
+        router.push("/dashboard");
         router.refresh();
       }
     });
