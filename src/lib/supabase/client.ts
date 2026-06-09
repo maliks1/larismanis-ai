@@ -1,4 +1,5 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { initDB, saveTransaction, getAllTransactions, clearTransactions } from '../indexedDB'
 
 /**
  * Singleton browser client for Supabase.
@@ -15,3 +16,16 @@ export function createClient() {
   }
   return browserClientInstance
 }
+
+export const syncWithSupabase = async () => {
+  const transactions = await getAllTransactions();
+  if (transactions.length > 0) {
+    const { data, error } = await createClient()
+      .from('transactions')
+      .insert(transactions);
+
+    if (!error) {
+      await clearTransactions();
+    }
+  }
+};
