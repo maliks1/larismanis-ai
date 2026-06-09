@@ -16,21 +16,18 @@ import {
   LogOut,
   User,
 } from "lucide-react";
-import { getBrowserSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
+import { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
-  const supabase = getBrowserSupabaseClient();
+  const supabase = createClient();
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    if (!supabase) {
-      return;
-    }
-
     const getUser = async () => {
       const {
         data: { user },
@@ -45,7 +42,7 @@ export function Navbar() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => {
+    } = supabase.auth.onAuthStateChange((_: AuthChangeEvent, session: Session | null) => {
       setUserEmail(session?.user?.email || null);
     });
 
@@ -57,21 +54,8 @@ export function Navbar() {
 
     setIsLoggingOut(true);
     try {
-      // Clear local storage and cookies
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("sb-access-token");
-        localStorage.removeItem("sb-refresh-token");
-      }
-
       // Sign out from Supabase
       await supabase.auth.signOut();
-
-      // Clear all cookies by setting them to expire
-      document.cookie.split(";").forEach((c) => {
-        document.cookie = c
-          .replace(/^ +/, "")
-          .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-      });
 
       // Use router.push with replace to navigate (clears browser history entry)
       router.push("/login");
@@ -203,20 +187,12 @@ export function Navbar() {
 
             {/* Supabase Status Indicator */}
             <div
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                supabase
-                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-                  : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
-              }`}
-              title={
-                supabase
-                  ? "Supabase Terkoneksi"
-                  : "Supabase Belum Dikonfigurasi"
-              }
+              className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+              title="Supabase Terkoneksi"
             >
               <Database className="h-3 w-3" />
               <span className="hidden md:inline">
-                {supabase ? "Terkoneksi" : "Offline Mode"}
+                Terkoneksi
               </span>
             </div>
 

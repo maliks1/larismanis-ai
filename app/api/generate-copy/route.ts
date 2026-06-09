@@ -2,7 +2,7 @@ import { google } from "@ai-sdk/google";
 import { generateObject } from "ai";
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 // export const runtime = "edge";
 
@@ -80,15 +80,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supabase = createSupabaseServerClient();
-    if (!supabase) {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
       return NextResponse.json(
-        {
-          error: "Supabase not configured",
-          details:
-            "NEXT_PUBLIC_SUPABASE_URL dan NEXT_PUBLIC_SUPABASE_ANON_KEY harus tersedia.",
-        },
-        { status: 500 },
+        { error: "Unauthorized" },
+        { status: 401 }
       );
     }
 

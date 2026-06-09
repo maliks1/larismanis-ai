@@ -12,7 +12,7 @@ import {
   Calendar,
   Trash2,
 } from "lucide-react";
-import { getBrowserSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database.types";
 
 type TransactionRow = Database["public"]["Tables"]["transactions"]["Row"];
@@ -47,15 +47,13 @@ const kelompokLabels: Record<string, string> = {
 };
 
 export function TransactionHistory() {
-  const supabase = getBrowserSupabaseClient();
+  const supabase = createClient();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<
     TransactionRow[]
   >([]);
-  const [isLoading, setIsLoading] = useState(Boolean(supabase));
-  const [error, setError] = useState<string | null>(
-    supabase ? null : "Supabase tidak terkonfigurasi"
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -73,8 +71,6 @@ export function TransactionHistory() {
   ).sort();
 
   const loadTransactions = useCallback(async () => {
-    if (!supabase) return;
-
     setIsLoading(true);
     setError(null);
 
@@ -134,12 +130,10 @@ export function TransactionHistory() {
   }, [filters, transactions]);
 
   useEffect(() => {
-    if (supabase) {
-      requestAnimationFrame(() => {
-        void loadTransactions();
-      });
-    }
-  }, [supabase, loadTransactions]);
+    requestAnimationFrame(() => {
+      void loadTransactions();
+    });
+  }, [loadTransactions]);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -148,7 +142,6 @@ export function TransactionHistory() {
   }, [filters, transactions, applyFilters]);
 
   const handleDelete = async (id: string) => {
-    if (!supabase) return;
     if (!confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) return;
 
     setDeletingId(id);

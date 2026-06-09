@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { PDFDocument, rgb } from "pdf-lib";
 
 type InvoiceData = {
@@ -23,14 +23,7 @@ type InvoiceData = {
 export async function POST(request: NextRequest) {
   try {
     // Auth check
-    const supabase = createSupabaseServerClient();
-
-    if (!supabase) {
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
-    }
+    const supabase = await createClient();
 
     const {
       data: { user },
@@ -268,7 +261,7 @@ export async function POST(request: NextRequest) {
     const pdfBytes = await pdfDoc.save();
 
     // Create a response with the PDF
-return new NextResponse(pdfBytes as unknown as BodyInit, {
+    return new NextResponse(pdfBytes as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="invoice-${body.invoiceNumber}.pdf"`,

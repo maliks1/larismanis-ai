@@ -1,14 +1,14 @@
-import { HomeDashboard } from "@/components/home-dashboard";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
+import LandingPage from "./landing/page";
 
 export default async function Home() {
-  const supabase = createSupabaseServerClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/login");
+  if (user) {
+    redirect("/dashboard");
   }
 
-  return <HomeDashboard />;
+  return <LandingPage />;
 }

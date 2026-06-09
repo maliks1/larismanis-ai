@@ -1,6 +1,6 @@
 "use server";
 
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database.types";
 
 type BudgetRow = Database["public"]["Tables"]["budgets"]["Row"];
@@ -21,14 +21,7 @@ export async function saveBudget(
   budgetId?: string
 ): Promise<BudgetResult> {
   try {
-    const supabase = createSupabaseServerClient();
-
-    if (!supabase) {
-      return {
-        success: false,
-        error: "Konfigurasi Supabase tidak ditemukan. Pastikan environment variables sudah diset.",
-      };
-    }
+    const supabase = await createClient();
 
     // Check if user is authenticated
     const {
@@ -117,14 +110,7 @@ export async function saveBudget(
  */
 export async function deleteBudget(budgetId: string): Promise<BudgetResult> {
   try {
-    const supabase = createSupabaseServerClient();
-
-    if (!supabase) {
-      return {
-        success: false,
-        error: "Konfigurasi Supabase tidak ditemukan.",
-      };
-    }
+    const supabase = await createClient();
 
     const {
       data: { user },
@@ -179,14 +165,7 @@ export async function getBudgets(): Promise<{
   error?: string;
 }> {
   try {
-    const supabase = createSupabaseServerClient();
-
-    if (!supabase) {
-      return {
-        success: false,
-        error: "Konfigurasi Supabase tidak ditemukan.",
-      };
-    }
+    const supabase = await createClient();
 
     const {
       data: { user },

@@ -5,7 +5,7 @@ import { FileText } from "lucide-react";
 import { exportBudgetReportToPDF } from "@/lib/export-pdf";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
-import { getBrowserSupabaseClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database.types";
 
 type TransactionRow = Database["public"]["Tables"]["transactions"]["Row"];
@@ -19,14 +19,12 @@ type Budget = {
 };
 
 export default function BudgetPage() {
-  const supabase = getBrowserSupabaseClient();
+  const supabase = createClient();
   const [transactions, setTransactions] = useState<TransactionRow[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isExporting, setIsExporting] = useState(false);
 
   const loadTransactions = useCallback(async () => {
-    if (!supabase) return;
-
     const { data } = await supabase
       .from("transactions")
       .select("*")
@@ -38,8 +36,6 @@ export default function BudgetPage() {
   }, [supabase]);
 
   const loadBudgets = useCallback(async () => {
-    if (!supabase) return;
-
     const { data } = await supabase.from("budgets").select("*").order("created_at", { ascending: false });
 
     if (data) {
@@ -48,12 +44,10 @@ export default function BudgetPage() {
   }, [supabase]);
 
   useEffect(() => {
-    if (supabase) {
-      requestAnimationFrame(() => {
-        void Promise.all([loadTransactions(), loadBudgets()]);
-      });
-    }
-  }, [supabase, loadTransactions, loadBudgets]);
+    requestAnimationFrame(() => {
+      void Promise.all([loadTransactions(), loadBudgets()]);
+    });
+  }, [loadTransactions, loadBudgets]);
 
   const handleExportPDF = () => {
     if (budgets.length === 0) {
