@@ -1,5 +1,5 @@
 // src/lib/indexedDB.js
-import { openDB } from 'idb';
+import { openDB } from 'indexeddb-promised';
 
 const DB_NAME = 'larismanis-ai-db';
 const STORE_NAME = 'transactions';
