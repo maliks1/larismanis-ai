@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import type { Session, AuthChangeEvent } from "@supabase/supabase-js";
 
 // ssr: false ensures this is only rendered on the client,
 // so AuthUI can safely access window.location without hydration issues.
@@ -15,7 +16,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Check current session first
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
       if (session) {
         router.push("/dashboard");
         router.refresh();
@@ -24,7 +25,7 @@ export default function LoginPage() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
       // Only redirect if session exists AND event is relevant (not SIGNED_OUT)
       if (session && event !== "SIGNED_OUT") {
         router.push("/dashboard");
