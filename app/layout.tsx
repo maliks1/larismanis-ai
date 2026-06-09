@@ -22,7 +22,6 @@ export const metadata: Metadata = {
   title: "LarisManis AI - Asisten Keuangan Suara & Pemasaran Visual UMKM",
   description:
     "Asisten keuangan suara dan generator pemasaran visual untuk UMKM Indonesia.",
-  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -54,22 +53,6 @@ export default function RootLayout({
           document.documentElement.classList.remove('dark');
         }
       })()
-    `}
-        </Script>
-        <Script id="serwist-init" strategy="afterInteractive">
-          {`
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(
-            registration => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            },
-            err => {
-              console.log('ServiceWorker registration failed: ', err);
-            }
-          );
-        });
-      }
     `}
         </Script>
       </head>

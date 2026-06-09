@@ -1,15 +1,6 @@
 import type { NextConfig } from "next";
-import withSerwistInit from "@serwist/next";
 
-// 1. Inisialisasi Serwist → ini mengembalikan FUNGSI wrapper
-const withSerwist = withSerwistInit({
-  swSrc: "src/service-worker.js",
-  swDest: "public/sw.js",
-  // Nonaktifkan saat development agar tidak konflik dengan Turbopack
-  disable: process.env.NODE_ENV !== "production",
-});
-
-// 2. Definisi config Next.js biasa
+// Definisi config Next.js standar
 const nextConfig: NextConfig = {
   assetPrefix: "",
   reactStrictMode: false,
@@ -36,5 +27,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-// 3. Wrap config dengan fungsi withSerwist (bukan spread object!)
-export default withSerwist(nextConfig);
+export default nextConfig;

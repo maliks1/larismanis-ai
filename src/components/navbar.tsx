@@ -54,7 +54,7 @@ export function Navbar() {
 
   const handleLogout = useCallback(async () => {
     if (!supabase || isLoggingOut) return;
-    
+
     setIsLoggingOut(true);
     try {
       // Clear local storage and cookies
@@ -62,24 +62,24 @@ export function Navbar() {
         localStorage.removeItem("sb-access-token");
         localStorage.removeItem("sb-refresh-token");
       }
-      
+
       // Sign out from Supabase
       await supabase.auth.signOut();
-      
+
       // Clear all cookies by setting them to expire
       document.cookie.split(";").forEach((c) => {
         document.cookie = c
           .replace(/^ +/, "")
           .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
       });
-      
+
       // Use router.push with replace to navigate (clears browser history entry)
-      router.push("/landing");
-      router.replace("/landing");
+      router.push("/login");
+      router.replace("/login");
     } catch (error) {
       console.error("Logout error:", error);
       // Force redirect even on error
-      window.location.href = "/landing";
+      window.location.href = "/login";
     } finally {
       setIsLoggingOut(false);
     }
