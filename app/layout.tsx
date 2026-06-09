@@ -56,6 +56,22 @@ export default function RootLayout({
       })()
     `}
         </Script>
+        <Script id="serwist-init" strategy="afterInteractive">
+          {`
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').then(
+            registration => {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            },
+            err => {
+              console.log('ServiceWorker registration failed: ', err);
+            }
+          );
+        });
+      }
+    `}
+        </Script>
       </head>
       <body className="min-h-full flex flex-col bg-[radial-gradient(circle_at_top,#f1f5f9_0%,#f8fafc_50%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top,#151b2d_0%,#0b0f19_60%,#080b13_100%)] text-slate-900 dark:text-slate-50 transition-colors duration-300">
         <ThemeProvider>

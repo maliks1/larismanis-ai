@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import withSerwistInit from "@serwist/next";
 
 const nextConfig: NextConfig = {
   // Pastikan asset paths relatif, bukan absolut
@@ -26,4 +27,8 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSerwistInit({
+  ...nextConfig,
+  swSrc: "src/service-worker.js",
+  swDest: "public/sw.js",
+});
