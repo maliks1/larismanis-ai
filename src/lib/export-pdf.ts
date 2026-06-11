@@ -14,7 +14,141 @@ const formatCurrency = (amount: number): string => {
   return "Rp" + amount.toLocaleString("id-ID");
 };
 
+// ====================== UTILITY FUNCTIONS ======================
+/**
+ * Memformat rentang tanggal untuk ditampilkan dalam laporan
+ * @param startDate Tanggal mulai (ISO string)
+ * @param endDate Tanggal akhir (ISO string)
+ * @returns String rentang tanggal yang diformat
+ */
+export const formatDateRange = (startDate: string, endDate: string): string => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
 
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  };
+
+  return `${start.toLocaleDateString("id-ID", formatOptions)} - ${end.toLocaleDateString("id-ID", formatOptions)}`;
+};
+
+/**
+ * Memformat baris tabel transaksi dengan opsi pengelompokan
+ * @param transaction Data transaksi
+ * @param options Opsi pengelompokan
+ * @returns Array string untuk baris tabel
+ */
+export const formatTableRow = (
+  transaction: TransactionRow,
+  options: {
+    includeCategories: boolean;
+    includeFinancialGrouping: boolean;
+    includeUrgencyLevel: boolean;
+  }
+): string[] => {
+  const row: string[] = [];
+  const date = new Date(transaction.created_at);
+
+  // Tanggal
+  row.push(
+    date.toLocaleDateString("id-ID", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    })
+  );
+
+  // Deskripsi
+  row.push(transaction.deskripsi || "-");
+
+  // Kategori (opsional)
+  if (options.includeCategories) {
+    row.push(transaction.kategori || "-");
+  }
+
+  // Grup Keuangan (opsional)
+  if (options.includeFinancialGrouping) {
+    row.push(transaction.kelompok_keuangan || "-");
+  }
+
+  // Tingkat Urgensi (opsional)
+  if (options.includeUrgencyLevel) {
+    row.push(transaction.tingkat_urgensi || "-");
+  }
+
+  // Nominal
+  row.push(
+    (transaction.tipe_transaksi === "pemasukan" ? "+" : "-") + formatCurrency(transaction.nominal)
+  );
+
+  return row;
+};
+
+/**
+ * Menambahkan judul bagian ke dokumen PDF
+ * @param doc Objek jsPDF
+ * @param title Judul bagian
+ * @param yPos Posisi Y saat ini
+ * @param margin Margin dokumen
+ * @param textColor Warna teks
+ * @returns Posisi Y baru setelah menambahkan judul
+ */
+export const addSectionTitle = (
+  doc: jsPDF,
+  title: string,
+  yPos: number,
+  margin: number,
+  textColor: [number, number, number]
+): number => {
+  doc.setTextColor(...textColor);
+  doc.setFontSize(14);
+  doc.setFont("helvetica", "bold");
+  doc.text(title, margin, yPos);
+  return yPos + 10;
+};
+
+/**
+ * Menambahkan kartu ringkasan ke dokumen PDF
+ * @param doc Objek jsPDF
+ * @param x Posisi X
+ * @param y Posisi Y
+ * @param width Lebar kartu
+ * @param height Tinggi kartu
+ * @param title Judul kartu
+ * @param value Nilai yang ditampilkan
+ * @param bgColor Warna latar belakang
+ * @param textColor Warna teks
+ * @param valueColor Warna nilai
+ */
+export const addSummaryCard = (
+  doc: jsPDF,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  title: string,
+  value: string,
+  bgColor: [number, number, number],
+  textColor: [number, number, number],
+  valueColor: [number, number, number]
+): void => {
+  doc.setFillColor(...bgColor);
+  doc.roundedRect(x, y, width, height, 3, 3, "F");
+
+  doc.setTextColor(...textColor);
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.text(title, x + 5, y + 8);
+
+  doc.setTextColor(...valueColor);
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.text(value, x + 5, y + 18);
+};
+
+// ====================== EXISTING FUNCTIONS ======================
 export const exportTransactionsToPDF = (
   transactions: TransactionRow[],
   summary: FinancialSummary
